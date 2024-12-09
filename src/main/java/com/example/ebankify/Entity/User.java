@@ -1,29 +1,56 @@
 package com.example.ebankify.Entity;
 
+
+import com.example.ebankify.Entity.Account;
 import com.example.ebankify.Entity.Enums.Role;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+import java.util.ArrayList;
+import java.util.List;
+
+
 @Entity
 @Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
     @Id
-    @GeneratedValue
-    private long id;
-    private String name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userId;
+
+    @Column(unique = true, nullable = false)
+    @NotBlank
+    @Email
     private String email;
+
+    @Column(nullable = false)
+    private String name;
+
+    @NotBlank
     private String password;
-    private int age;
-    private int creditScore;
+
+    @NotNull
+    @Min(18)
+    private Integer age;
+
+    @NotNull
+    @Positive
+    private Double monthlyIncome;
+
+    @NotNull
+    @Min(300)
+    @Max(850)
+    private Integer creditScore;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
     private Role role;
-    private double monthly_income;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Account> accounts = new ArrayList<>();
 }
