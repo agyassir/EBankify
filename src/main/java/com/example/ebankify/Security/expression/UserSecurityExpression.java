@@ -1,8 +1,8 @@
 package com.example.ebankify.Security.expression;
 
 
-import com.example.demo.entities.User;
-import com.example.demo.enums.Role;
+import com.example.ebankify.Entity.Enums.Role;
+import com.example.ebankify.Entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +14,12 @@ public class UserSecurityExpression extends SecurityExpressionRoot {
         User currentUser = getCurrentUser();
         return currentUser.getRole() == Role.ADMIN ||
                 currentUser.getRole() == Role.EMPLOYEE ||
-                currentUser.getUserId().equals(userId);
+                currentUser.getId().equals(userId);
     }
 
     public boolean canModifyUser(Long userId) {
         User currentUser = getCurrentUser();
         return currentUser.getRole() == Role.ADMIN ||
-                currentUser.getUserId().equals(userId);
+                currentUser.getId().equals(userId);
     }
 }

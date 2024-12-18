@@ -11,16 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Data
 @Entity
 @Table(name = "users")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long Id;
 
     @Column(unique = true, nullable = false)
     @NotBlank
@@ -39,7 +39,7 @@ public class User {
 
     @NotNull
     @Positive
-    private Double monthlyIncome;
+    private Double monthly_income;
 
     @NotNull
     @Min(300)

@@ -13,6 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateUserRequest {
 
+        @Null
+        private Long id;
+
         @NotBlank(message = "Name is required")
         @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
         private String name;
@@ -31,16 +34,15 @@ public class CreateUserRequest {
         @Min(value = 18, message = "Age must be at least 18")
         private Integer age;
 
-        @NotNull(message = "Monthly income is required")
-        @Positive(message = "Monthly income must be positive")
-        private Double monthlyIncome;
+
+        private Double Monthly_income;
 
         @NotNull(message = "Credit score is required")
         @Min(value = 300, message = "Credit score must be at least 300")
         @Max(value = 850, message = "Credit score cannot exceed 850")
         private Integer creditScore;
 
-        @NotNull(message = "Role is required")
+
         private Role role;
 
 }

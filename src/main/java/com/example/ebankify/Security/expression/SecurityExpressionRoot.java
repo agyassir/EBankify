@@ -1,9 +1,10 @@
 package com.example.ebankify.Security.expression;
 
 
-import com.example.demo.config.SecurityUser;
-import com.example.demo.entities.User;
-import com.example.demo.enums.Role;
+
+import com.example.ebankify.Config.SecurityUser;
+import com.example.ebankify.Entity.Enums.Role;
+import com.example.ebankify.Entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

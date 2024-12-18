@@ -20,3 +20,22 @@ spring:
         expiration: 604800000 # 7 days
   main:
     allow-bean-definition-overriding: true
+
+server:
+  port: 8090
+  error:
+    include-message: always
+    include-binding-errors: always
+
+
+
+
+keycloak:
+  realm: Ebankify-realm
+  auth-server-url: http://localhost:8080
+  resource: Ebankify-client
+  credentials:
+    secret:  eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI4MjU3MmM2Ni1jYTU2LTQ5ODktYTIwOC03YTUxODYzNGI4MjAifQ
+  bearer-only: true
+  ssl-required: external
+  use-resource-role-mappings: true

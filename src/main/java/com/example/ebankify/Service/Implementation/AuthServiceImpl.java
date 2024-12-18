@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .age(request.getAge())
-                .monthlyIncome(request.getMonthlyIncome())
+                .monthly_income(request.getMonthly_income())
                 .creditScore(request.getCreditScore())
                 .build();
 
