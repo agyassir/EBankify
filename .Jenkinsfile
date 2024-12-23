@@ -12,7 +12,7 @@ pipeline {
             steps {
                 git credentialsId: 'a34501ce-0263-48d7-9380-5f8892714617',
                     branch: 'main',
-                    url: 'https://github.com/agyassir/Jenkins-Workshop.git'
+                    url: 'https://github.com/agyassir/Ebankify.git'
             }
         }
         stage('Build') {
@@ -26,6 +26,16 @@ pipeline {
                     sh 'mvn sonar:sonar -Dsonar.login=$SONAR_TOKEN'
                 }
             }
+
         }
     }
+     post {
+      success {
+                 echo 'Pipeline completed successfully!'
+             }
+
+             failure {
+                 echo 'Pipeline failed. Please check the logs.'
+             }
+     }
 }
