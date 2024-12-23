@@ -19,11 +19,14 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
     private final ModelMapper AccountMapper;
+    private final ModelMapper modelMapper;
 
-    public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository,ModelMapper AccountMapper) {
+    public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository,ModelMapper AccountMapper,
+                              ModelMapper modelMapper) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
         this.AccountMapper=AccountMapper;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -35,20 +38,18 @@ public class AccountServiceImpl implements AccountService {
 
         Account account = AccountMapper.map(accountDTO,Account.class);
         Account savedAccount = accountRepository.save(account);
-        return convertToDto(savedAccount);
+        return AccountMapper.map(savedAccount, AccountDTO.class);
     }
 
     @Override
     public AccountDTO getAccountById(Long id) {
-        return accountRepository.findById(id)
-                .map(this::convertToDto)
+        return accountRepository.findById(id).map((element) -> modelMapper.map(element, AccountDTO.class))
                 .orElse(null); // or throw custom exception for not found
     }
 
     @Override
     public List<AccountDTO> getAllAccounts() {
-        return accountRepository.findAll().stream()
-                .map(this::convertToDto)
+        return accountRepository.findAll().stream().map((element) -> modelMapper.map(element, AccountDTO.class))
                 .collect(Collectors.toList());
     }
 
@@ -60,7 +61,7 @@ public class AccountServiceImpl implements AccountService {
             account.setBalance(accountDTO.getBalance());
             account.setStatus(accountDTO.getStatus());
             Account updatedAccount = accountRepository.save(account);
-            return convertToDto(updatedAccount);
+            return AccountMapper.map(updatedAccount, AccountDTO.class);
         } else {
             return null; // or throw custom exception for not found
         }
@@ -81,14 +82,6 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.existsById(id);
     }
 
-    // Utility method to convert Account entity to AccountDTO
-    private AccountDTO convertToDto(Account account) {
-        AccountDTO accountDTO = new AccountDTO();
-        accountDTO.setId(account.getId());
-        accountDTO.setBalance(account.getBalance());
-        accountDTO.setStatus(account.getStatus());
-        accountDTO.setUserId(account.getUser().getId());
-        return accountDTO;
-    }
+
 }
 

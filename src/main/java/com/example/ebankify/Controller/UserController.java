@@ -4,6 +4,8 @@ import com.example.ebankify.Controller.vm.User.Request.CreateUserRequest;
 import com.example.ebankify.DTO.UserDTO;
 import com.example.ebankify.Entity.Enums.Role;
 import com.example.ebankify.Service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v2/users")
 public class UserController {
-    @Autowired
     private UserService userService;
+    private final ModelMapper mapper;
+
     @GetMapping("/")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> users = userService.getAllUsers();
@@ -28,15 +32,16 @@ public class UserController {
     }
     @PostMapping("/")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest createUserRequest) {
-        String role = createUserRequest.getRole();
+        String role = createUserRequest.getRole().toString();
+        UserDTO userDTO = mapper.map(createUserRequest,UserDTO.class);
 
         if ("ADMIN".equals(role)) {
-            UserDTO createdUser = userService.createUser(createUserRequest.getUserDTO());
+            UserDTO createdUser = userService.createUser(userDTO);
             return ResponseEntity.ok(createdUser);
         } else if (role == null) {
             // Set the default role to USER if no role is provided
-            createUserRequest.getUserDTO().setRole(Role.USER);
-            UserDTO createdUser = userService.createUser(createUserRequest.getUserDTO());
+            userDTO.setRole(Role.USER);
+            UserDTO createdUser = userService.createUser(userDTO);
             return ResponseEntity.ok(createdUser);
         } else {
             // Return a FORBIDDEN response if the role is not recognized

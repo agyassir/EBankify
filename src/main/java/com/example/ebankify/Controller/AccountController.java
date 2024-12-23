@@ -2,14 +2,21 @@ package com.example.ebankify.Controller;
 
 import com.example.ebankify.DTO.AccountDTO;
 import com.example.ebankify.Service.AccountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2/accounts")
+@Tag(name = "Account Management", description = "APIs for managing bank accounts")
+@PreAuthorize("isAuthenticated()")
 public class AccountController {
     private final AccountService accountService;
 
@@ -18,18 +25,15 @@ public class AccountController {
     }
 
     // Create a new account
+    @Operation(summary = "Create new account", description = "Creates a new bank account for a user")
+    @ApiResponse(responseCode = "200", description = "Account created successfully")
+    @ApiResponse(responseCode = "403", description = "Access denied")
+    @PreAuthorize("@accountSecurity.canCreateAccount(#accountDTO.userId)")
     @PostMapping("/")
-    public ResponseEntity<?> createAccount(@RequestBody AccountDTO accountDTO) {
-        try {
-            AccountDTO createdAccount = accountService.createAccount(accountDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
+    public ResponseEntity<?> createAccount(@Valid @RequestBody AccountDTO accountDTO) {
+       return ResponseEntity.ok(accountService.createAccount(accountDTO));
     }
 
-    // Retrieve an account by ID
     @GetMapping("/{id}")
     public ResponseEntity<AccountDTO> getAccount(@PathVariable Long id) {
         AccountDTO account = accountService.getAccountById(id);
@@ -41,13 +45,17 @@ public class AccountController {
     }
 
     // Retrieve all accounts
-    @GetMapping("/")
+    @Operation(summary = "Get all accounts", description = "Retrieves all accounts in the system")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @GetMapping
     public ResponseEntity<List<AccountDTO>> getAllAccounts() {
         List<AccountDTO> accounts = accountService.getAllAccounts();
         return ResponseEntity.ok(accounts);
     }
 
     // Update an account
+    @Operation(summary = "Update account", description = "Updates account details")
+    @PreAuthorize("@accountSecurity.canModifyAccount(#id)")
     @PutMapping("/{id}")
     public ResponseEntity<AccountDTO> updateAccount(@PathVariable Long id, @RequestBody AccountDTO accountDTO) {
         AccountDTO updatedAccount = accountService.updateAccount(id, accountDTO);
@@ -59,13 +67,13 @@ public class AccountController {
     }
 
     // Delete an account
+    @Operation(summary = "Delete account", description = "Deletes an account from the system")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
         boolean isDeleted = accountService.deleteAccount(id);
-        if (isDeleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+
+                return ResponseEntity.noContent().build();
+
     }
 }

@@ -22,11 +22,14 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final UserRepository userRepository;
     private final ModelMapper InvoiceMapper;
+    private final ModelMapper modelMapper;
 
-    public InvoiceServiceImpl(InvoiceRepository invoiceRepository, UserRepository userRepository,ModelMapper invoiceMapper) {
+    public InvoiceServiceImpl(InvoiceRepository invoiceRepository, UserRepository userRepository,ModelMapper invoiceMapper,
+                              ModelMapper modelMapper) {
         this.invoiceRepository = invoiceRepository;
         this.userRepository = userRepository;
         this.InvoiceMapper=invoiceMapper;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -47,7 +50,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public InvoiceDTO getInvoiceById(Long invoiceId) {
         return invoiceRepository.findById(invoiceId)
-                .map(this::convertToDto)
+                .map((element) -> modelMapper.map(element, InvoiceDTO.class))
                 .orElseThrow(() -> new RuntimeException("Invoice not found")); // Use custom exception if needed
     }
 
@@ -55,7 +58,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     public List<InvoiceDTO> getInvoicesByUserId(Long userId) {
         return invoiceRepository.findByUserId(userId)
                 .stream()
-                .map(this::convertToDto)
+                .map((element) -> modelMapper.map(element, InvoiceDTO.class))
                 .collect(Collectors.toList());
     }
 
@@ -63,7 +66,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     public List<InvoiceDTO> getAllInvoices() {
         return invoiceRepository.findAll()
                 .stream()
-                .map(this::convertToDto)
+                .map((element) -> modelMapper.map(element, InvoiceDTO.class))
                 .collect(Collectors.toList());
     }
 
@@ -78,7 +81,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setDueDate(invoiceDTO.getDueDate());
 
         Invoice updatedInvoice = invoiceRepository.save(invoice);
-        return convertToDto(updatedInvoice);
+        return InvoiceMapper.map(updatedInvoice, InvoiceDTO.class);
     }
 
     @Override
@@ -100,27 +103,18 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setAmountDue(0);
         Invoice updatedInvoice = invoiceRepository.save(invoice);
 
-        return convertToDto(updatedInvoice);
+        return InvoiceMapper.map(updatedInvoice, InvoiceDTO.class);
     }
 
     @Override
     public List<InvoiceDTO> getOverdueInvoices() {
         LocalDate today = LocalDate.now();
-        return invoiceRepository.findByDueDateBeforeAndAmountDueGreaterThan(today,0.0)
-                .stream()
-                .map(this::convertToDto)
+        return invoiceRepository.findByDueDateBeforeAndAmountDueGreaterThan(today, 0.0)
+                .stream().map((element) -> modelMapper.map(element, InvoiceDTO.class))
                 .collect(Collectors.toList());
     }
 
     // Helper method to convert Invoice entity to InvoiceDTO
-    private InvoiceDTO convertToDto(Invoice invoice) {
-        InvoiceDTO invoiceDTO = new InvoiceDTO();
-        invoiceDTO.setId(invoice.getId());
-        invoiceDTO.setAmountDue(invoice.getAmountDue());
-        invoiceDTO.setDueDate(invoice.getDueDate());
-        invoiceDTO.setUserId(invoice.getUser().getId());
-        invoiceDTO.setAmountDue(invoice.getAmountDue());
-        return invoiceDTO;
-    }
+
 }
 

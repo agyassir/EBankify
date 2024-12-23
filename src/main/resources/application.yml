@@ -8,6 +8,34 @@ spring:
     change-log: classpath:db/master.yml
   jpa:
     database: postgresql
+  data:
+    elasticsearch:
+      repositories:
+        enabled:
+  security:
+    jwt:
+      secret-key: 257953dbe11ff48a77884648d1d3644d68c4beabf38f0b09504dd5022f5e49155aaf958a33e5098926b4ec0cc86022c1e8248dd8b02f921f05c0aa89cb52999769546e374bc631ecbd04022cf4abe547d1b084a195215919b9bcbebe0ed55bd73e4ca6707cb00b498ad51c062039300cc038f4b92efc1f6fb3ed626336c48290
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days
+  main:
+    allow-bean-definition-overriding: true
+
+server:
+  port: 8090
+  error:
+    include-message: always
+    include-binding-errors: always
 
 
 
+
+keycloak:
+  realm: Ebankify-realm
+  auth-server-url: http://localhost:8080
+  resource: Ebankify-client
+  credentials:
+    secret:  eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI4MjU3MmM2Ni1jYTU2LTQ5ODktYTIwOC03YTUxODYzNGI4MjAifQ
+  bearer-only: true
+  ssl-required: external
+  use-resource-role-mappings: true
